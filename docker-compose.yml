@@ -30,7 +30,7 @@ services:
       - '3000:3000'
       - '30000:9229'
     environment:
-      MONGO_INITDB_DATABASE: university
+      MONGO_DATABASE: university
       MONGO_USERNAME: admin
       MONGO_PASSWORD: secret
     networks:
@@ -44,7 +44,7 @@ services:
       context: ./api
       dockerfile: Dockerfile
     volumes:
-      - ./api:/api
+      - ./api/:/api/
       - /api/node_modules
     networks:
       - internal

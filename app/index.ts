@@ -26,9 +26,9 @@ app.initDatabase(
     {
       host: 'mongodb',
       port: 27017,
-      database: process.env.MONGO_INITDB_DATABASE,
-      password: process.env.MONGO_INITDB_DATABASE,
-      username: process.env.MONGO_INITDB_DATABASE,
+      database: process.env.MONGO_DATABASE,
+      password: process.env.MONGO_PASSWORD,
+      username: process.env.MONGO_USERNAME,
     },
     [
       Lector,
