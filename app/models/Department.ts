@@ -1,4 +1,5 @@
-import { Entity, ObjectID, ObjectIdColumn, Column } from "typeorm";
+import {Entity, ObjectID, ObjectIdColumn, Column, RelationId} from "typeorm";
+import Lector from "./Lector";
 
 /**
  * Class Department
@@ -22,7 +23,7 @@ export default class Department
     /**
      * @private
      */
-    @Column()
+    @ObjectIdColumn({nullable: true})
     private head: ObjectID;
 
     /**

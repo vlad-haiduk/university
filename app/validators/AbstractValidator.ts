@@ -16,13 +16,16 @@ export default abstract class AbstractValidator
      */
     public entity: string;
 
-    protected constructor()
+    /**
+     * @param options
+     */
+    constructor(options: any)
     {
+        this.options  = options;
         this.validate = this.validate.bind(this);
     }
 
     /**
-     *
      * @param req
      * @param res
      * @param next
