@@ -1,6 +1,6 @@
 import express, { Application, NextFunction, Request, Response } from "express";
 import { AbstractController } from "./controllers/AbstractController";
-import { createConnection } from "typeorm";
+import mongoose from "mongoose";
 import StatusCodes from "http-status-codes";
 
 /**
@@ -95,35 +95,16 @@ export class App
     }
 
     /**
-     * Init TypeORM connection
-     * @param configs
-     * @param entities
+     * Init db connection
+     * @param uri
+     * @param options
      */
-    public async initDatabase(
-        configs: {
-            host: string | undefined,
-            port: number | undefined,
-            username: string | undefined,
-            password: string | undefined,
-            database: string | undefined
-        },
-        entities: Array<any>
-    ): Promise<void>
+    public async initDatabase(uri: string, options: mongoose.ConnectionOptions): Promise<void>
     {
-        const connection = await createConnection({
-            type: "mongodb",
-            host: configs.host,
-            port: 3306,
-            username: configs.username,
-            password: configs.password,
-            database: configs.database,
-            entities: entities,
-            synchronize: true,
-            logging: false
-        });
-
-        if (!connection.isConnected) {
-            console.log('Couldn\'t connect to Mongodb');
+        try {
+            await mongoose.connect(uri, options);
+        } catch (error: any) {
+            console.log(error);
         }
     }
 

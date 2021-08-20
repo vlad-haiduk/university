@@ -1,11 +1,10 @@
 import { App } from './app';
 import logger from 'morgan';
 import express from "express";
-import Lector from "./models/Lector";
-import Department from "./models/Department";
 import DepartmentController from "./controllers/DepartmentController";
 import LectorController from "./controllers/LectorController";
 import helmet from "helmet";
+import { MONGO_OPTIONS, MONGO_URI } from "./config/db";
 
 const app = new App({
   port: 3000,
@@ -22,16 +21,4 @@ const app = new App({
 });
 
 app.bootstrap();
-app.initDatabase(
-    {
-      host: 'mongodb',
-      port: 27017,
-      database: process.env.MONGO_DATABASE,
-      password: process.env.MONGO_PASSWORD,
-      username: process.env.MONGO_USERNAME,
-    },
-    [
-      Lector,
-      Department
-    ]
-);
+app.initDatabase(MONGO_URI, MONGO_OPTIONS);

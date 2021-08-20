@@ -1,68 +1,43 @@
-import {Entity, ObjectID, ObjectIdColumn, Column, RelationId} from "typeorm";
-import Lector from "./Lector";
+import { AbstractModel } from "./AbstractModel";
+import { SchemaDefinition, SchemaTypes } from "mongoose";
 
 /**
  * Class Department
  */
-@Entity("department")
-export default class Department
+class Department extends AbstractModel
 {
 
     /**
-     * @private
+     * @inheritDoc
      */
-    @ObjectIdColumn()
-    private id: ObjectID;
-
-    /**
-     * @private
-     */
-    @Column()
-    private name: string;
-
-    /**
-     * @private
-     */
-    @ObjectIdColumn({nullable: true})
-    private head: ObjectID;
-
-    /**
-     * @private
-     */
-    @Column()
-    private created_at: Date
-
-    /**
-     * @param name
-     * @return Department
-     */
-    public setName(name: string)
+    constructor()
     {
-        this.name = name;
-
-        return this;
+        super("Department");
     }
 
     /**
-     * @param head
-     * @return Department
+     * @inheritDoc
      */
-    public setHead(head: ObjectID)
+    public getSchemaDefinition(): SchemaDefinition
     {
-        this.head = head;
-
-        return this;
-    }
-
-    /**
-     * @param created_at
-     * @return Department
-     */
-    public setCreated(created_at: Date)
-    {
-        this.created_at = created_at;
-
-        return this;
+        return {
+            name: {
+                type: SchemaTypes.String,
+                required: true,
+            },
+            head: {
+                type: SchemaTypes.ObjectId,
+                required: true,
+                ref: 'Lector'
+            },
+            created_at: {
+                type: Date,
+                required: true,
+                default: Date.now()
+            },
+        };
     }
 
 }
+
+export default new Department();

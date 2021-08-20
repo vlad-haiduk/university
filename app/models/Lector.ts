@@ -1,96 +1,55 @@
-import { Entity, ObjectID, ObjectIdColumn, Column } from "typeorm";
+import { AbstractModel } from "./AbstractModel";
+import { SchemaDefinition, SchemaTypes } from "mongoose";
 
 /**
  * Class Lector
  */
-@Entity("lector")
-export default class Lector
+class Lector extends AbstractModel
 {
 
     /**
-     * @private
+     * @inheritDoc
      */
-    @ObjectIdColumn()
-    private id: ObjectID;
-
-    /**
-     * @private
-     */
-    @Column()
-    private name: string;
-
-    /**
-     * @private
-     */
-    @Column()
-    private email: string;
-
-    /**
-     * @private
-     */
-    @Column()
-    private degree: string;
-
-    /**
-     * @private
-     */
-    @Column()
-    private salary: number
-
-    /**
-     * @private
-     */
-    @Column()
-    private departments: Array<ObjectID>
-
-    /**
-     * @private
-     */
-    @Column()
-    private created_at: Date
-
-    /**
-     * @param name
-     * @return Lector
-     */
-    public setName(name: string)
+    constructor()
     {
-        this.name = name;
-
-        return this;
+        super("Lector");
     }
 
     /**
-     * @param email
-     * @return Lector
+     * @inheritDoc
      */
-    public setEmail(email: string)
+    public getSchemaDefinition(): SchemaDefinition
     {
-        this.email = email;
-
-        return this;
-    }
-
-    /**
-     * @param salary
-     * @return Lector
-     */
-    public setSalary(salary: number)
-    {
-        this.salary = salary;
-
-        return this;
-    }
-
-    /**
-     * @param created_at
-     * @return Lector
-     */
-    public setCreated(created_at: Date)
-    {
-        this.created_at = created_at;
-
-        return this;
+        return {
+            name: {
+                type: SchemaTypes.String,
+                required: true,
+            },
+            email: {
+                type: SchemaTypes.String,
+                required: true,
+                unique: true,
+                lowercase: true,
+                trim: true
+            },
+            salary: {
+                type: SchemaTypes.Number,
+                required: true,
+            },
+            degree: {
+                type: SchemaTypes.String,
+                required: true,
+                enum: ["assistant", "associate_professor", "professor"],
+            },
+            departments: [SchemaTypes.ObjectId],
+            created_at: {
+                type: Date,
+                required: true,
+                default: Date.now()
+            },
+        };
     }
 
 }
+
+export default new Lector();
