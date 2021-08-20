@@ -139,6 +139,13 @@ export default class LectorController extends AbstractController
      */
     public async listData(req: Request, res: Response, next: NextFunction): Promise<void>
     {
+        const lectors = [];
+
+        for await (const lector of Lector.model.find().lean()) {
+            lectors.push(lector)
+        }
+
+        super.sendSuccess(res, lectors);
     }
 
 }

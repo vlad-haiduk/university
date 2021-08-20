@@ -59,12 +59,12 @@ export default class DepartmentController extends AbstractController
         if (isValidObjectId(req.body.head)) {
             const record = await Lector.model.findById(req.body.head).lean();
             if (record) {
-                const lector = await Lector.model.create({
+                const department = await Department.model.create({
                     name: req.body.name,
                     head: req.body.head
                 });
 
-                lector;
+                this.sendSuccess(res, {id: department._id})
             } else {
                 super.sendError(res, StatusCodes.NOT_FOUND, `Lector not found with id ${req.body.head}`);
             }
@@ -80,6 +80,13 @@ export default class DepartmentController extends AbstractController
      */
     public async listData(req: Request, res: Response, next: NextFunction): Promise<void>
     {
+        const departments = [];
+
+        for await (const department of Department.model.find().lean()) {
+            departments.push(department)
+        }
+
+        super.sendSuccess(res, departments);
     }
 
 }
