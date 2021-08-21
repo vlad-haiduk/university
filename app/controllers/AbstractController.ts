@@ -57,10 +57,7 @@ export abstract class AbstractController
 
         for (const route of this.routes) {
             for (const validator of route.validators) {
-                validator.instance.options = validator.options;
-                validator.instance.entity  = this.entity;
-
-                this.ExpressRouter.use(route.path, validator.instance.validate);
+                this.ExpressRouter.use(route.path, validator.validate);
             }
 
             const middleware = route.middleware.bind(this);

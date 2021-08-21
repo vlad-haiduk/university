@@ -27,6 +27,6 @@ export type TRoute = {
     /**
      * Route validators
      */
-    validators: Array<{instance: AbstractValidator, options?: object}>;
+    validators: Array<AbstractValidator>;
 
 }
