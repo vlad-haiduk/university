@@ -41,12 +41,25 @@ export default class DepartmentController extends AbstractController
                 }),
             ]
         },
+
         {
             path: "/list",
             method: HttpMethods.GET,
             middleware: this.listData,
             validators: []
-        }
+        },
+        {
+            path: "/count",
+            method: HttpMethods.GET,
+            middleware: this.count,
+            validators: []
+        },
+        {
+            path: "/:id",
+            method: HttpMethods.GET,
+            middleware: this.getOne,
+            validators: []
+        },
     ];
 
     /**
@@ -57,14 +70,14 @@ export default class DepartmentController extends AbstractController
     public async create(req: Request, res: Response, next: NextFunction): Promise<void>
     {
         if (isValidObjectId(req.body.head)) {
-            const record = await Lector.model.findById(req.body.head).lean();
+            const record = await Lector.model.findById(req.body.head);
             if (record) {
                 const department = await Department.model.create({
                     name: req.body.name,
                     head: req.body.head
                 });
 
-                this.sendSuccess(res, {id: department._id})
+                this.sendSuccess(res, department.toJSON());
             } else {
                 super.sendError(res, StatusCodes.NOT_FOUND, `Lector not found with id ${req.body.head}`);
             }
@@ -82,11 +95,42 @@ export default class DepartmentController extends AbstractController
     {
         const departments = [];
 
-        for await (const department of Department.model.find().lean()) {
-            departments.push(department)
+        for await (const department of Department.model.find()) {
+            departments.push(department.toJSON());
         }
 
         super.sendSuccess(res, departments);
+    }
+
+    /**
+     * @param req
+     * @param res
+     * @param next
+     */
+    public async getOne(req: Request, res: Response, next: NextFunction): Promise<void>
+    {
+        if (isValidObjectId(req.params.id)) {
+            const document = await Department.model.findById(req.params.id);
+            if (!document) {
+                this.sendError(res, StatusCodes.NOT_FOUND, "Department not found");
+            } else {
+                super.sendSuccess(res, document.toJSON());
+            }
+        } else {
+            this.sendError(res, StatusCodes.BAD_REQUEST, "Invalid id");
+        }
+    }
+
+    /**
+     * @param req
+     * @param res
+     * @param next
+     */
+    public async count(req: Request, res: Response, next: NextFunction): Promise<void>
+    {
+        const count = await Department.model.count();
+
+        super.sendSuccess(res, {count: count});
     }
 
 }

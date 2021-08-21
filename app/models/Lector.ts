@@ -8,6 +8,11 @@ class Lector extends AbstractModel
 {
 
     /**
+     * Additional options
+     */
+    public degrees: Array<string> = ["assistant", "associate_professor", "professor"];
+
+    /**
      * @inheritDoc
      */
     constructor()
@@ -39,7 +44,7 @@ class Lector extends AbstractModel
             degree: {
                 type: SchemaTypes.String,
                 required: true,
-                enum: ["assistant", "associate_professor", "professor"],
+                enum: this.degrees,
             },
             departments: [SchemaTypes.ObjectId],
             created_at: {

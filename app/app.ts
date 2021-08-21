@@ -81,13 +81,19 @@ export class App
 
         // Global handling of 404 response
         this.application.use((req: Request, res: Response) => {
-            res.status(StatusCodes.NOT_FOUND).json('Resource not found');
+            res.status(StatusCodes.NOT_FOUND).json({
+                status: "error",
+                message: "Resource not found",
+            });
         });
 
         // Global json parser
         this.application.use((err: any, req: Request, res: Response, next: NextFunction) => {
             if (err instanceof SyntaxError) {
-                res.status(StatusCodes.BAD_REQUEST).json('Invalid json');
+                res.status(StatusCodes.BAD_REQUEST).json({
+                    status: "error",
+                    message: "Invalid json"
+                });
             } else {
                 next();
             }

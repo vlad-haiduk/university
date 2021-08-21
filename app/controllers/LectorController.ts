@@ -50,9 +50,9 @@ export default class LectorController extends AbstractController
             ]
         },
         {
-            path: "/membership",
+            path: "/department_membership",
             method: HttpMethods.POST,
-            middleware: this.membership,
+            middleware: this.updateMembership,
             validators: [
                 new JsonSchema({
                     schema: [
@@ -81,7 +81,19 @@ export default class LectorController extends AbstractController
             method: HttpMethods.GET,
             middleware: this.listData,
             validators: []
-        }
+        },
+        {
+            path: "/count",
+            method: HttpMethods.GET,
+            middleware: this.count,
+            validators: []
+        },
+        {
+            path: "/:id",
+            method: HttpMethods.GET,
+            middleware: this.getOne,
+            validators: []
+        },
     ];
 
     /**
@@ -91,19 +103,17 @@ export default class LectorController extends AbstractController
      */
     public async create(req: Request, res: Response, next: NextFunction): Promise<void>
     {
-        const degrees = ["assistant", "associate_professor", "professor"];
-
-        const record = await Lector.model.findOne({email: req.body.email}).lean();
-        if (!record) {
-            if (degrees.includes(req.body.degree)) {
+        const document = await Lector.model.findOne({email: req.body.email});
+        if (!document) {
+            if (Lector.degrees.includes(req.body.degree)) {
                 const lector = await Lector.model.create({
                     name: req.body.name,
                     email: req.body.email,
                     salary: req.body.salary,
                     degree: req.body.degree,
-
                 });
-                super.sendSuccess(res, {id: lector._id});
+
+                super.sendSuccess(res, lector.toJSON());
             } else {
                 super.sendError(res, StatusCodes.BAD_REQUEST, 'Invalid value for field degree');
             }
@@ -117,7 +127,7 @@ export default class LectorController extends AbstractController
      * @param res
      * @param next
      */
-    public async membership(req: Request, res: Response, next: NextFunction): Promise<void>
+    public async updateMembership(req: Request, res: Response, next: NextFunction): Promise<void>
     {
         if (req.body.departments && Array.isArray(req.body.departments)) {
             const result = req.body.departments.every((id: any) => {
@@ -141,11 +151,42 @@ export default class LectorController extends AbstractController
     {
         const lectors = [];
 
-        for await (const lector of Lector.model.find().lean()) {
-            lectors.push(lector)
+        for await (const lector of Lector.model.find()) {
+            lectors.push(lector.toJSON());
         }
 
         super.sendSuccess(res, lectors);
+    }
+
+    /**
+     * @param req
+     * @param res
+     * @param next
+     */
+    public async getOne(req: Request, res: Response, next: NextFunction): Promise<void>
+    {
+        if (isValidObjectId(req.params.id)) {
+            const document = await Lector.model.findById(req.params.id);
+            if (!document) {
+                this.sendError(res, StatusCodes.NOT_FOUND, "Lector not found");
+            } else {
+                super.sendSuccess(res, document.toJSON());
+            }
+        } else {
+            this.sendError(res, StatusCodes.BAD_REQUEST, "Invalid id");
+        }
+    }
+
+    /**
+     * @param req
+     * @param res
+     * @param next
+     */
+    public async count(req: Request, res: Response, next: NextFunction): Promise<void>
+    {
+        const count = await Lector.model.count();
+
+        super.sendSuccess(res, {count: count});
     }
 
 }

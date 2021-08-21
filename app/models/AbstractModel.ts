@@ -23,8 +23,8 @@ export abstract class AbstractModel
         this.schema = new Schema(this.getSchemaDefinition(), {versionKey: false});
 
         this.schema.set('toJSON', {
+            virtuals: true,
             transform: function (doc, ret) {
-                ret.id = ret._id;
                 delete ret._id;
             }
         });
