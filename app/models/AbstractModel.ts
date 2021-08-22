@@ -1,5 +1,8 @@
 import {SchemaDefinition, Model, Document, Schema, model, LeanDocument} from "mongoose";
 
+/**
+ * class AbstractModel
+ */
 export abstract class AbstractModel
 {
 
