@@ -1,4 +1,4 @@
-import {SchemaDefinition, Model, Document, Schema, model, LeanDocument} from "mongoose";
+import { SchemaDefinition, Model, Document, Schema, model } from "mongoose";
 
 /**
  * class AbstractModel
