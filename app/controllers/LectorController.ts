@@ -6,6 +6,7 @@ import Lector from "../models/Lector";
 import { StatusCodes } from "http-status-codes";
 import { isValidObjectId } from "mongoose";
 import Department from "../models/Department";
+import IsValidId from "../validators/IsValidId";
 
 /**
  * Class LectorController
@@ -50,27 +51,16 @@ export default class LectorController extends AbstractController
             ]
         },
         {
-            path: "/department_membership",
+            path: "/:id/update_membership",
             method: HttpMethods.POST,
             middleware: this.updateMembership,
             validators: [
+                new IsValidId({params: ["id"]}),
                 new JsonSchema({
                     schema: [
                         {
-                            fieldName: "name",
-                            fieldType: "string"
-                        },
-                        {
-                            fieldName: "email",
-                            fieldType: "string"
-                        },
-                        {
-                            fieldName: "salary",
-                            fieldType: "number"
-                        },
-                        {
-                            fieldName: "degree",
-                            fieldType: "string"
+                            fieldName: "department_ids",
+                            fieldType: "array"
                         },
                     ]
                 }),
@@ -92,7 +82,9 @@ export default class LectorController extends AbstractController
             path: "/:id",
             method: HttpMethods.GET,
             middleware: this.getOne,
-            validators: []
+            validators: [
+                new IsValidId({params: ["id"]})
+            ]
         },
     ];
 
@@ -129,16 +121,33 @@ export default class LectorController extends AbstractController
      */
     public async updateMembership(req: Request, res: Response, next: NextFunction): Promise<void>
     {
-        if (req.body.departments && Array.isArray(req.body.departments)) {
-            const result = req.body.departments.every((id: any) => {
-                if (isValidObjectId(id)) {
-                    const department: any = Department.model.findById(id).lean();
-
-                    return !!department;
+        const lector = await Lector.model.findById(req.params.id);
+        if (lector) {
+            let errors = [];
+            for (const department of req.body.department_ids) {
+                if (isValidObjectId(department)) {
+                    const result = await Department.model.findById(department);
+                    if (!result) {
+                        errors.push({field: "department_ids", error: `Not found Department with id: ${department}`});
+                    }
+                } else {
+                    errors.push({field: "department_ids", error: `Invalid department id: ${department}`});
                 }
+            }
 
-                return false;
-            });
+            if (errors.length === 0) {
+                lector.toJSON()
+                const result: any = await Lector.model.findByIdAndUpdate(req.params.id, {departments: req.body.department_ids}, {new: true});
+
+                super.sendSuccess(res, result.toJSON());
+            } else {
+                res.status(StatusCodes.BAD_REQUEST).json({
+                    status: "error",
+                    errors: errors
+                });
+            }
+        } else {
+            super.sendError(res, StatusCodes.NOT_FOUND, `Not found Lector with id ${req.params.id}`);
         }
     }
 
@@ -165,15 +174,11 @@ export default class LectorController extends AbstractController
      */
     public async getOne(req: Request, res: Response, next: NextFunction): Promise<void>
     {
-        if (isValidObjectId(req.params.id)) {
-            const document = await Lector.model.findById(req.params.id);
-            if (!document) {
-                this.sendError(res, StatusCodes.NOT_FOUND, "Lector not found");
-            } else {
-                super.sendSuccess(res, document.toJSON());
-            }
+        const document = await Lector.model.findById(req.params.id);
+        if (!document) {
+            this.sendError(res, StatusCodes.NOT_FOUND, "Lector not found");
         } else {
-            this.sendError(res, StatusCodes.BAD_REQUEST, "Invalid id");
+            super.sendSuccess(res, document.toJSON());
         }
     }
 

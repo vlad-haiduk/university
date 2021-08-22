@@ -6,6 +6,7 @@ import { StatusCodes } from "http-status-codes";
 import Department from "../models/Department";
 import Lector from "../models/Lector";
 import { isValidObjectId, ObjectId } from "mongoose";
+import IsValidId from "../validators/IsValidId";
 
 /**
  * Class DepartmentController
@@ -58,7 +59,9 @@ export default class DepartmentController extends AbstractController
             path: "/:id",
             method: HttpMethods.GET,
             middleware: this.getOne,
-            validators: []
+            validators: [
+                new IsValidId({params: ["id"]})
+            ]
         },
     ];
 
@@ -109,15 +112,11 @@ export default class DepartmentController extends AbstractController
      */
     public async getOne(req: Request, res: Response, next: NextFunction): Promise<void>
     {
-        if (isValidObjectId(req.params.id)) {
-            const document = await Department.model.findById(req.params.id);
-            if (!document) {
-                this.sendError(res, StatusCodes.NOT_FOUND, "Department not found");
-            } else {
-                super.sendSuccess(res, document.toJSON());
-            }
+        const document = await Department.model.findById(req.params.id);
+        if (!document) {
+            this.sendError(res, StatusCodes.NOT_FOUND, "Department not found");
         } else {
-            this.sendError(res, StatusCodes.BAD_REQUEST, "Invalid id");
+            super.sendSuccess(res, document.toJSON());
         }
     }
 
