@@ -1,4 +1,4 @@
-import {ConnectionOptions} from 'mongoose'
+import { ConnectionOptions } from 'mongoose'
 
 /**
  * Set Mongo URI

@@ -21,6 +21,7 @@
     "http-methods-constants": "^1.1.0",
     "http-status-codes": "^2.1.4",
     "jade": "~1.11.0",
+    "jsonschema": "^1.4.0",
     "mongoose": "^5.13.7",
     "morgan": "^1.9.1",
     "ts-node": "^10.2.1",

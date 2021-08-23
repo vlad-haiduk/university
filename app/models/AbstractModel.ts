@@ -1,5 +1,8 @@
-import {SchemaDefinition, Model, Document, Schema, model} from "mongoose";
+import { SchemaDefinition, Model, Document, Schema, model } from "mongoose";
 
+/**
+ * class AbstractModel
+ */
 export abstract class AbstractModel
 {
 
@@ -37,31 +40,5 @@ export abstract class AbstractModel
      * @protected
      */
     public abstract getSchemaDefinition(): SchemaDefinition;
-
-    /**
-     * Set document fields value
-     * @param _id
-     * @param update
-     */
-    public async setFields(_id: Buffer | string, update: object): Promise<void>
-    {
-        await this.model.updateOne({_id: _id}, update);
-    }
-
-    /**
-     * Get field from document
-     * @param _id
-     * @param field
-     */
-    public async getField(_id: Buffer, field: string): Promise<any>
-    {
-        const document: any = await this.model.findOne({_id: _id}).lean();
-
-        if (document[field]) {
-            return {field: document[field]};
-        }
-
-        return null;
-    }
 
 }
