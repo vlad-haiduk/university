@@ -56,6 +56,12 @@ export default class DepartmentController extends AbstractController
             validators: []
         },
         {
+            path: "/find",
+            method: HttpMethods.GET,
+            middleware: this.find,
+            validators: []
+        },
+        {
             path: "/:id",
             method: HttpMethods.GET,
             middleware: this.getOne,
@@ -135,6 +141,26 @@ export default class DepartmentController extends AbstractController
         const count = await Department.model.count();
 
         super.sendSuccess(res, {count: count});
+    }
+
+    /**
+     * @param req
+     * @param res
+     * @param next
+     */
+    public async find(req: Request, res: Response, next: NextFunction): Promise<void>
+    {
+        if (req.query.name) {
+            const document: any = await Department.model.findOne({name: req.query.name});
+            if (document) {
+                super.sendSuccess(res, [document.toJSON()]);
+            } else {
+                super.sendSuccess(res, []);
+            }
+
+        } else {
+            super.sendError(res, StatusCodes.BAD_REQUEST, 'Invalid query param');
+        }
     }
 
 }

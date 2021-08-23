@@ -54,6 +54,7 @@ services:
       - app
     ports:
       - '80:3001'
+      - '40000:9229'
     restart: always
 
 networks:

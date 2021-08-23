@@ -73,6 +73,12 @@ export default class LectorController extends AbstractController
             validators: []
         },
         {
+            path: "/find",
+            method: HttpMethods.GET,
+            middleware: this.find,
+            validators: []
+        },
+        {
             path: "/count",
             method: HttpMethods.GET,
             middleware: this.count,
@@ -192,6 +198,26 @@ export default class LectorController extends AbstractController
         const count = await Lector.model.count();
 
         super.sendSuccess(res, {count: count});
+    }
+
+    /**
+     * @param req
+     * @param res
+     * @param next
+     */
+    public async find(req: Request, res: Response, next: NextFunction): Promise<void>
+    {
+        if (req.query.department) {
+            let lectors = [];
+
+            for await (const lector of Lector.model.find({departments: {$in: [req.query.department]}})) {
+                lectors.push(lector.toJSON());
+            }
+
+            super.sendSuccess(res, lectors);
+        } else {
+            super.sendError(res, StatusCodes.BAD_REQUEST, 'Invalid query param');
+        }
     }
 
 }
