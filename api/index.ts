@@ -120,6 +120,12 @@ app.post('/message', async (req: Request, res: Response, next: NextFunction) => 
                 message: `departments: ${department_list.map((dep: any) => dep.name).join(',')}, lectors: ${lector_list.map((lec: any) => lec.name).join(',')}`
             });
         }
+
+        if (!res.headersSent) {
+            res.status(statusCodes.OK).json({
+                message: "Invalid message format"
+            });
+        }
     } else {
         res.status(statusCodes.BAD_REQUEST).json({
             message: "Message not found"
