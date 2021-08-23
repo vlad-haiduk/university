@@ -136,6 +136,7 @@ Request:
 </p>
 
 <code>
+{<br>
 "status": "success",<br>
   "data": [<br>
     {<br>
